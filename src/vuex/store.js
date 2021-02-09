@@ -6,11 +6,15 @@ const store = createStore({
     state: {
         items: [],
         isLoading: false,
-        error: null
+        error: null,
+        currentTodo: null,
     },
     getters: {
         items: (state) => {
             return state.items;
+        },
+        currentTodo: (state) => {
+            return state.currentTodo;
         }
     },
     mutations: {
@@ -26,6 +30,19 @@ const store = createStore({
         FETCH_ITEM_FAILED: (state, error) => {
             state.isLoading = false;
             state.error = error;
+        },
+        FETCH_TODO_STARTED: (state) => {
+            state.isLoading = true;
+            state.error = null;
+        },
+        FETCH_TODO_SUCCESS: (state, payload) => {
+            state.isLoading = false;
+            state.currentTodo = payload;
+            state.error = null;
+        },
+        FETCH_TODO_FAILED: (state, error) => {
+            state.isLoading = false;
+            state.error = error;
         }
     },
     actions: {
@@ -36,6 +53,14 @@ const store = createStore({
             }).catch((e) => {
                 commit("FETCH_ITEM_FAILED", e.response.data);
             })
+        },
+        fetchTodo: ({ commit }, id) => {
+            commit("FETCH_TODO_STARTED");
+            Api.getTodo(id).then(() => {
+                commit("FETCH_TODO_SUCCESS");
+            }).catch(() => {
+                commit("FETCH_TODO_FAILED");
+            });
         }
     }
 });

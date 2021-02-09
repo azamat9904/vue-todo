@@ -5,6 +5,7 @@
                 class="content__sidebar" 
                 :items="items"
                 :param="$route.params.id"
+                :currentTodo="currentTodo"
                 />
             <main class="content__main">
                 <router-view />
@@ -23,8 +24,17 @@
         },
         computed: {
             ...mapGetters([
-                'items'
+                'items',
+                'currentTodo'
             ])
+        },
+         watch:{
+            $route(to){
+                const id = to.params.id;
+                if(id){
+                    this.$store.dispatch('fetchTodo', id);
+                }
+            }
         },
         methods: {
             ...mapActions([

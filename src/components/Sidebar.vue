@@ -28,7 +28,7 @@
     export default {
         props: {
             items: Array,
-            param: String
+            param: String,
         },
         methods: {
             changeRoute(id){
