@@ -2,10 +2,13 @@
     <div class="sidebar">
         <nav class="sidebar__nav">
             <ul class="sidebar__list">
-                <li class="sidebar__item sidebar__item_all" :class="{active: !param}" @click="changeRoute(-1)">
+                <li 
+                    class="sidebar__item sidebar__item_all" 
+                    :class="{active: !param}" 
+                    @click="changeRoute(-1)"
+                >
                     <span class="sidebar__link">Все задачи</span>
                 </li>
-
                 <li 
                     class="sidebar__item" 
                     v-for="(item, index) in items" 
@@ -13,32 +16,47 @@
                     :class="{active: param == item.id, 'sidebar__item_last': index == items.length - 1}"
                     @click="changeRoute(item.id)"
                     >
-                   <div class="sidebar__color" :style="{background: item.color}"></div>    
+                   <div class="sidebar__color" :style="{background: item.color.color}"></div>    
                     <span class="sidebar__link">{{item.title}}</span>
+                    <button class="sidebar__close" @click="removeItem(item)"><img src="../assets/item-close.png" alt="item-close"></button>
                 </li>
-
-                <li class="sidebar__item sidebar__item_add">
+                <li class="sidebar__item sidebar__item_add" @click="setIsOpen(true)">
                     <a href="#" class="sidebar__link">Добавить папку</a>
+                    <AddTask 
+                        v-if="isOpen"
+                        :setIsOpen="setIsOpen"
+                        :colors="colors"
+                    />
                 </li>
             </ul>
         </nav>
     </div>
 </template>
 <script>
+    import AddTask from './AddTask';
+
     export default {
         props: {
             items: Array,
             param: String,
+            changeRoute: Function,
+            colors: Array
+        },
+        data(){
+            return {
+                isOpen: false
+            }
         },
         methods: {
-            changeRoute(id){
-                if(id === -1){
-                    this.$router.push({name: 'Home'});
-                    return;
-                }
-
-                this.$router.push({name: 'Todo', params: {id}});
+            setIsOpen(value){
+                this.isOpen = value;
+            },
+            removeItem(item){
+                this.$emit('removeItem', item);
             }
+        },
+        components: {
+            AddTask
         }
     }
 
@@ -56,6 +74,20 @@
             padding-right: 20px;
         }
 
+        &__close{
+            border: none;
+            outline: none;
+            background: transparent;
+            position: absolute;
+            right:13px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            width: 10px;
+            height: 10px;
+            display: none;
+        }
+
         &__item {
             padding: 12px 13px;
             border-radius: 5px;
@@ -69,11 +101,19 @@
                 background: #fff;
             }
 
+            &:hover{
+                background: #fff;
+            }
+
+            &:hover > #{$self}__close{
+                display: block;
+            }
+
             &_all {
                 background: url(../assets/list.png) 13px center no-repeat;
                 margin-bottom: 30px;
 
-                &.active {
+                &.active, &:hover {
                     background: url(../assets/list.png) 13px center no-repeat, #fff;
                 }
 
@@ -91,9 +131,10 @@
 
             &_add {
                 background: url(../assets/plus.png) 13px center no-repeat;
+                position: releative;
 
-                &.active {
-                    background: url(../assets/plus.png) 13px center no-repeat, #fff;
+                &:hover {
+                     background: url(../assets/plus.png) 13px center no-repeat;
                 }
 
                 &>#{$self}__link {

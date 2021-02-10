@@ -6,6 +6,9 @@
                 :items="items"
                 :param="$route.params.id"
                 :currentTodo="currentTodo"
+                :changeRoute="changeRoute"
+                :colors="colors"
+                @removeItem="remove"
                 />
             <main class="content__main">
                 <router-view />
@@ -25,24 +28,36 @@
         computed: {
             ...mapGetters([
                 'items',
-                'currentTodo'
+                'currentTodo',
+                'colors'
             ])
         },
          watch:{
             $route(to){
                 const id = to.params.id;
-                if(id){
-                    this.$store.dispatch('fetchTodo', id);
-                }
+                if(id) this.$store.dispatch('fetchTodo', id);
             }
         },
         methods: {
             ...mapActions([
-                'fetchItems'
-            ])
+                'fetchItems',
+                'fetchColors',
+                'removeItem'
+            ]),
+            changeRoute(id){
+                if(id === -1){
+                    this.$router.push({name: 'Home'});
+                    return;
+                }
+                this.$router.push({name: 'Todo', params: {id}});
+            },
+            remove(item){
+                this.removeItem(item);
+            }
         },
         mounted(){
             this.fetchItems();
+            this.fetchColors();
         },
     }
 

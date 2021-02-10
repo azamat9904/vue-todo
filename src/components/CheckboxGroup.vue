@@ -3,6 +3,7 @@
         <div class="checkbox-group__element">
             <input type="checkbox" :id="'check' + id" />
             <label :for="'check' + id"></label>
+            <span class="checkbox-group__close"><img src="../assets/item-close.png" alt="item-close"></span>
         </div>
         <div class="checkbox-group__text">
             Изучить JavaScript
@@ -16,8 +17,25 @@
 </script>
 <style lang="scss">
      .checkbox-group{
+         $self: &;
          display:flex;
          margin-bottom: 20px;
+         cursor: pointer;
+         position: relative;
+        width: 100%;
+        max-width: 300px;
+        
+        &__close{
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: 15px;
+            display: none;
+        }
+
+        &:hover #{$self}__close{
+            display: block;
+        }
 
          &__element{
 
@@ -43,8 +61,6 @@
              input:checked + label{
                  background:url(../assets/checked.svg) center no-repeat, #4DD599;
              }
-
-
          }
 
          &__text{
